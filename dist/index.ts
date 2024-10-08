@@ -75,7 +75,6 @@ const constructFromOps = (
   i: { val: number },
   options: ParseOptions
 ): any => {
-  console.log(i);
   switch (ops[i.val++]) {
     case Operation.map: {
       const map = {};
@@ -116,16 +115,19 @@ const constructFromOps = (
       return bytes;
     }
     case Operation.integer: {
-      // TODO doesn't handle negative numbers properly (also not perfect)
       const l = ops[i.val++];
       const h = ops[i.val++];
-      let res = BigInt(0);
-      res += BigInt(h);
-      res *= 0xffffffffn;
-      res += BigInt(l);
-      return res;
-    }
+      const translator = new Uint32Array([l, h]).buffer;
 
+      return new BigInt64Array(translator, 0, 1)[0];
+    }
+    case Operation.float: {
+      const l = ops[i.val++];
+      const h = ops[i.val++];
+      const translator = new Uint32Array([l, h]).buffer;
+
+      return new Float64Array(translator, 0, 1)[0];
+    }
     case Operation.bool: {
       return !!ops[i.val++];
     }
@@ -136,39 +138,15 @@ const constructFromOps = (
   }
 };
 
-export const parse = (source: string, options: ParseOptions = {}) => {
-  if (wasm) {
-    const sourcePtr = writeString(source);
-    const opsSlicePtr = wasm.parse(sourcePtr, source.length);
-    const opsSlice = readSlice(opsSlicePtr);
-    const ops = new Uint32Array(wasm.memory.buffer, opsSlice.ptr, opsSlice.len);
-    console.log(ops);
+export const parse = (source: string, options: ParseOptions = {}): any => {
+  const sourcePtr = writeString(source);
+  const opsSlicePtr = wasm.parse(sourcePtr, source.length);
+  const opsSlice = readSlice(opsSlicePtr);
+  const ops = new Uint32Array(wasm.memory.buffer, opsSlice.ptr, opsSlice.len);
 
-    wasm.parseFree();
-    wasm.freeString(sourcePtr);
-    return constructFromOps(ops, { val: 0 }, options);
-  } else {
-    throw new Error("should be unreachable");
-  }
+  const result = constructFromOps(ops, { val: 0 }, options);
+
+  wasm.parseFree();
+  wasm.freeString(sourcePtr);
+  return result;
 };
-
-console.log(
-  parse(
-    `
-
-.id = @uuid("f998b1ac-2872-4daf-9009-9f20f94e7752"),
-.time = 1710085168,
-.payload = Command {
-  .do = @action("clear_chat"),
-  .sender = "kristoff-it",
-  .roles = ["admin", "mod"],
-  .extra = {
-    "agent": "Mozilla/5.0",
-    "os": "Linux/x64", 
-  },
-}
-
-`,
-    { literals: { uuid: (bytes) => bytes.split("-") } }
-  )
-);
