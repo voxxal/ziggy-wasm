@@ -1,0 +1,16 @@
+{
+  "name": "ziggy-wasm",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "esrun dist/index.ts"
+  },
+  "keywords": [],
+  "author": "voxal",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^22.7.5",
+    "esrun": "^3.2.26"
+  }
+}
