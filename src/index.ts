@@ -1,4 +1,5 @@
 import { readFile } from "fs/promises";
+import { join } from "path";
 
 interface ParseOptions {
   literals?: { [k: string]: (v: string) => any };
@@ -16,12 +17,12 @@ interface WasmExports {
   parseFree: () => void;
 }
 
-const source = await readFile("dist/ziggy.wasm");
+const source = await readFile(join(import.meta.dirname, "ziggy.wasm"));
 let mem: any;
 const module = await WebAssembly.instantiate(source, {
   dbg: {
     print: console.log,
-    printMem: (ptr, len, text) =>
+    printMem: (ptr: number, len: number, text: boolean) =>
       console.log(
         ptr,
         len,
@@ -77,7 +78,7 @@ const constructFromOps = (
 ): any => {
   switch (ops[i.val++]) {
     case Operation.map: {
-      const map = {};
+      const map: Record<string, any> = {};
       const len = ops[i.val++];
 
       for (let field = 0; field < len; field++) {

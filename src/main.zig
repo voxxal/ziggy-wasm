@@ -50,8 +50,6 @@ var last_parse_arena: ?*std.heap.ArenaAllocator = null;
 // 32 bits (in wasm32) so we need to return a pointer instead of a
 // 64 bit value which SliceGuarenteed is.
 export fn parse(source: [*]u8, len: usize) *const SliceGuaranteed(usize) {
-    printMem(source, len, false);
-
     var arena = std.heap.ArenaAllocator.init(allocator);
     const gpa = arena.allocator();
     const res = Parser.parseLeaky(dynamic.Value, gpa, source[0..len :0], .{}) catch |e| {
