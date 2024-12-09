@@ -24,8 +24,8 @@
     // internet connectivity.
     .dependencies = .{
         .ziggy = .{
-            .url = "git+https://github.com/kristoff-it/ziggy#42b6f5d7320340bc5903c4c29d34065e8517a549",
-            .hash = "12200b69baf035d0474e04b131862d36b2657fbce88a5c9dc657af861430e5fc7e3d",
+            .url = "git+https://github.com/kristoff-it/ziggy.git#fe73beef9f52f04048d8b19016fc4fbc66b4596f",
+            .hash = "1220da8bf4c66576a308db22af6b43097e3c3d5d7d7c78c4066f866ab6f79745e337",
         },
     },
     .paths = .{

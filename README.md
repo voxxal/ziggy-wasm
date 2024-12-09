@@ -11,7 +11,7 @@ npm install ziggy-wasm
 ## Example Usage
 
 ```js
-import { parse } from "ziggy-json";
+import { parse } from "ziggy-wasm";
 
 parse(`{ .name = "Ziggy", .date = @date("2024-12-09") }`, {
   literals: { date: Date.prototype.constructor },
